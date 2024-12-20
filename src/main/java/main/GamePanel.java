@@ -36,7 +36,9 @@ public class GamePanel extends JPanel implements Runnable {
     List<EnemyA> enemyAList = new ArrayList<>();
     List<EnemyB> enemyBList = new ArrayList<>();
 
-    StartWave<Object> waveA = new StartWave<>();
+    StartWave waveA = new StartWave();
+
+    CollisionChecker cc = new CollisionChecker();
 
 
     public GamePanel() {
@@ -53,39 +55,6 @@ public class GamePanel extends JPanel implements Runnable {
     public void startGameThread() {
         gameThread = new Thread(this);
         gameThread.start(); //calls run()
-    }
-
-    public void checkEnemyHitBase() {
-        Iterator<EnemyA> iterator = enemyAList.iterator();
-
-        while (iterator.hasNext()) {
-            EnemyA enemyA = iterator.next();
-            CollisionChecker cc = new CollisionChecker(base, enemyA);
-
-            if (cc.checkIntersection()) {
-                iterator.remove();
-            }
-        }
-    }
-
-    public void checkEnemyHitPlayerProjectile() {
-        Iterator<EnemyA> iterator = enemyAList.iterator();
-
-        while (iterator.hasNext()) {
-            EnemyA enemyA = iterator.next();
-
-            Iterator<PlayerProjectile> iterator2 = playerTower.projectiles.iterator();
-            while (iterator2.hasNext()) {
-                PlayerProjectile projectile = iterator2.next();
-                CollisionChecker cc = new CollisionChecker(enemyA, projectile);
-
-                if (cc.checkIntersection()) {
-                    iterator.remove();
-                    iterator2.remove();
-                    break;
-                }
-            }
-        }
     }
 
     @Override
@@ -126,8 +95,12 @@ public class GamePanel extends JPanel implements Runnable {
             enemy.update();
         }
 
-        checkEnemyHitBase();
-        checkEnemyHitPlayerProjectile();
+        cc.checkEntityListHitEntity(enemyAList, base);
+        cc.checkEntityListHitEntity(enemyBList, base);
+
+        cc.checkEntityListHitEntityList(enemyAList, playerTower.projectiles);
+        cc.checkEntityListHitEntityList(enemyBList, playerTower.projectiles);
+
     }
 
     public void paintComponent(Graphics g) {
