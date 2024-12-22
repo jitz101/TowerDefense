@@ -1,13 +1,11 @@
 package main;
 
 import entity.*;
-import entity.projectile.PlayerProjectile;
+import entity.gui.StartButton;
 import wave.StartWave;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +27,8 @@ public class GamePanel extends JPanel implements Runnable {
 
     int FPS = 60;
 
+    public Boolean enemiesCleared = true;
+
     KeyHandler keyHandler = new KeyHandler();
     Thread gameThread;
     Base base = new Base(this);
@@ -36,9 +36,11 @@ public class GamePanel extends JPanel implements Runnable {
     List<EnemyA> enemyAList = new ArrayList<>();
     List<EnemyB> enemyBList = new ArrayList<>();
 
-    StartWave waveA = new StartWave();
+    public StartWave startWave = new StartWave();
 
     CollisionChecker cc = new CollisionChecker();
+
+    StartButton startButton = new StartButton(this);
 
 
     public GamePanel() {
@@ -47,9 +49,6 @@ public class GamePanel extends JPanel implements Runnable {
         this.setDoubleBuffered(true);
         this.addKeyListener(keyHandler);
         this.setFocusable(true);
-
-        waveA.startEnemySpawner(enemyAList, () -> new EnemyA(this), 10, 1000, 3000, 0);
-        waveA.startEnemySpawner(enemyBList, () -> new EnemyB(this), 10, 1000, 3000, 5000);
     }
 
     public void startGameThread() {
@@ -88,12 +87,29 @@ public class GamePanel extends JPanel implements Runnable {
         base.update();
         playerTower.update();
 
+        startButton.update();
+        if (startButton.startSignal) {
+            switch (startButton.wave) {
+                case 1:
+                    startWave.startEnemySpawner(enemyAList, () -> new EnemyA(this), 10, 1000, 1000, 0);
+                    startButton.startSignal = false;
+                    break;
+                case 2:
+                    startWave.startEnemySpawner(enemyBList, () -> new EnemyB(this), 10, 1000, 1000, 0);
+                    startButton.startSignal = false;
+                    break;
+            }
+
+        }
+
         for (EnemyA enemy : enemyAList) {
             enemy.update();
         }
         for (EnemyB enemy : enemyBList) {
             enemy.update();
         }
+
+        enemiesCleared = enemyAList.isEmpty() && enemyBList.isEmpty();
 
         cc.checkEntityListHitEntity(enemyAList, base);
         cc.checkEntityListHitEntity(enemyBList, base);
@@ -107,6 +123,8 @@ public class GamePanel extends JPanel implements Runnable {
         super.paintComponent(g);
 
         Graphics2D g2 = (Graphics2D)g;
+
+        startButton.draw(g2);
 
         base.draw(g2);
         playerTower.draw(g2);
