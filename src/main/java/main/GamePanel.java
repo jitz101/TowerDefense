@@ -1,6 +1,7 @@
 package main;
 
 import entity.*;
+import entity.gui.Money;
 import entity.gui.StartButton;
 import wave.StartWave;
 
@@ -10,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GamePanel extends JPanel implements Runnable {
-    // SCREEN SETTINGS
     final int originalTileSize = 16;
     public final int scale = 3;
 
@@ -41,6 +41,7 @@ public class GamePanel extends JPanel implements Runnable {
     CollisionChecker cc = new CollisionChecker();
 
     StartButton startButton = new StartButton(this);
+    Money money = new Money(this);
 
 
     public GamePanel() {
@@ -58,7 +59,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     @Override
     public void run() {
-        double drawInterval = 1000000000 / FPS;
+        double drawInterval = (double) 1000000000 / FPS;
         double nextDrawTime = System.nanoTime() + drawInterval;
 
         while (gameThread != null) {
@@ -78,7 +79,7 @@ public class GamePanel extends JPanel implements Runnable {
 
                 nextDrawTime += drawInterval;
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                System.err.println("Error in run(): " + e.getMessage());
             }
         }
     }
@@ -99,7 +100,6 @@ public class GamePanel extends JPanel implements Runnable {
                     startButton.startSignal = false;
                     break;
             }
-
         }
 
         for (EnemyA enemy : enemyAList) {
@@ -114,8 +114,8 @@ public class GamePanel extends JPanel implements Runnable {
         cc.checkEntityListHitEntity(enemyAList, base);
         cc.checkEntityListHitEntity(enemyBList, base);
 
-        cc.checkEntityListHitEntityList(enemyAList, playerTower.projectiles);
-        cc.checkEntityListHitEntityList(enemyBList, playerTower.projectiles);
+        cc.checkEntityListHitEntityList(enemyAList, playerTower.projectiles, 10, money);
+        cc.checkEntityListHitEntityList(enemyBList, playerTower.projectiles, 20, money);
 
     }
 
@@ -125,6 +125,7 @@ public class GamePanel extends JPanel implements Runnable {
         Graphics2D g2 = (Graphics2D)g;
 
         startButton.draw(g2);
+        money.draw(g2);
 
         base.draw(g2);
         playerTower.draw(g2);
