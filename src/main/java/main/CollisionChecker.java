@@ -1,6 +1,7 @@
 package main;
 
 import entity.Entity;
+import entity.gui.Money;
 
 import java.util.Iterator;
 import java.util.List;
@@ -15,7 +16,7 @@ public class CollisionChecker<T> {
         entityList.removeIf(entityFromList -> checkIntersection(entityFromList, entity));
     }
 
-    public <T extends Entity> void checkEntityListHitEntityList(List<T> entityListA, List<T> entityListB) {
+    public <T extends Entity> void checkEntityListHitEntityList(List<T> entityListA, List<T> entityListB, int reward, Money money) {
         Iterator<T> iterator = entityListA.iterator();
 
         while (iterator.hasNext()) {
@@ -28,6 +29,7 @@ public class CollisionChecker<T> {
                 if (checkIntersection(entityA, entityB)) {
                     iterator.remove();
                     iterator2.remove();
+                    money.addMoney(reward);
                     break;
                 }
             }
