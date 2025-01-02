@@ -8,13 +8,13 @@ import java.awt.*;
 public class PlayerProjectile extends Entity {
     private double angle;
 
-    public PlayerProjectile(GamePanel gamePanel, int x, int y, double angle) {
+    public PlayerProjectile(GamePanel gamePanel, int x, int y, double angle, int projectileSpeed) {
         super(gamePanel);
-        setDefaultValues((double) x, (double) y, 5);
+        setDefaultValues((double) x, (double) y, projectileSpeed);
         this.angle = angle;
 
         getImage("/projectile/playerProjectile.png");
-        hitbox = drawHitbox((int) xD, (int) yD, 2, 2, true);
+        hitbox = setHitbox((int) xD, (int) yD, 2, 2, true);
     }
 
     public void update() {

@@ -2,20 +2,19 @@ package entity.gui;
 
 import entity.Entity;
 import main.GamePanel;
+import main.Text;
 
 import java.awt.*;
-import java.io.IOException;
-import java.util.Objects;
 
 public class Money extends Entity {
-    int money;
+    public int moneyAmount = 100;
 
     public Money(GamePanel gamePanel) {
         super(gamePanel);
     }
 
     public void addMoney(int reward) {
-        money += reward;
+        moneyAmount += reward;
     }
 
     public void update() {
@@ -23,19 +22,13 @@ public class Money extends Entity {
     }
 
     public void draw(Graphics2D g2) {
-        Font pixelFont;
-        try {
-            pixelFont = Font.createFont(Font.TRUETYPE_FONT, Objects.requireNonNull(getClass().getResourceAsStream("/fonts/PressStart2P-Regular.ttf")))
-                    .deriveFont(20f);
-        } catch (FontFormatException | IOException e) {
-            System.err.println("Font Error: " + e.getMessage());
-            pixelFont = new Font("Monospaced", Font.PLAIN, 20);
-        }
+        Text font = new Text();
+        Font pixelFont = font.pixelFont(20);
 
         g2.setFont(pixelFont);
         g2.setColor(Color.WHITE);
 
-        String text = money + "$";
+        String text = moneyAmount + "$";
 
         FontMetrics metrics = g2.getFontMetrics(pixelFont);
         int textWidth = metrics.stringWidth(text);

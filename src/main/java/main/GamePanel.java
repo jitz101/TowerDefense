@@ -3,20 +3,22 @@ package main;
 import entity.*;
 import entity.gui.Money;
 import entity.gui.StartButton;
+import entity.gui.shop.*;
 import wave.StartWave;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class GamePanel extends JPanel implements Runnable {
     final int originalTileSize = 16;
     public final int scale = 3;
 
     public final int tileSize = originalTileSize * scale; // 48x48 tile;
-    final int maxScreenCol = 16;
-    final int maxScreenRow = 12;
+    public final int maxScreenCol = 24; // 16
+    public final int maxScreenRow = 18; // 12
     public final int screenWidth = tileSize * maxScreenCol; // 768 pixels
     public final int screenHeight = tileSize * maxScreenRow; // 576 pixels
 
@@ -27,22 +29,27 @@ public class GamePanel extends JPanel implements Runnable {
 
     int FPS = 60;
 
+    Boolean firstDraw = true;
     public Boolean enemiesCleared = true;
 
     KeyHandler keyHandler = new KeyHandler();
     Thread gameThread;
     Base base = new Base(this);
     PlayerTower playerTower = new PlayerTower(this);
-    List<EnemyA> enemyAList = new ArrayList<>();
-    List<EnemyB> enemyBList = new ArrayList<>();
+    CopyOnWriteArrayList<EnemyA> enemyAList = new CopyOnWriteArrayList<>();
+    CopyOnWriteArrayList<EnemyB> enemyBList = new CopyOnWriteArrayList<>();
 
     public StartWave startWave = new StartWave();
 
     CollisionChecker cc = new CollisionChecker();
 
     StartButton startButton = new StartButton(this);
+    ShopButton shopButton = new ShopButton(this);
     Money money = new Money(this);
-
+    Shop shop = new Shop(this);
+    RateOfFireButton rateOfFireButton = new RateOfFireButton(this, money);
+    DamageButton damageButton = new DamageButton(this, money);
+    BulletSpeedButton bulletSpeedButton = new BulletSpeedButton(this, money, playerTower);
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -92,7 +99,7 @@ public class GamePanel extends JPanel implements Runnable {
         if (startButton.startSignal) {
             switch (startButton.wave) {
                 case 1:
-                    startWave.startEnemySpawner(enemyAList, () -> new EnemyA(this), 10, 1000, 1000, 0);
+                    startWave.startEnemySpawner(enemyAList, () -> new EnemyA(this), 1000, 100, 1000, 0);
                     startButton.startSignal = false;
                     break;
                 case 2:
@@ -121,11 +128,15 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-
         Graphics2D g2 = (Graphics2D)g;
 
-        startButton.draw(g2);
-        money.draw(g2);
+        if (firstDraw) {
+            shop.draw(g2);
+            rateOfFireButton.draw(g2);
+            damageButton.draw(g2);
+            bulletSpeedButton.draw(g2);
+            firstDraw = false;
+        }
 
         base.draw(g2);
         playerTower.draw(g2);
@@ -137,6 +148,17 @@ public class GamePanel extends JPanel implements Runnable {
             enemy.draw(g2);
         }
 
+        startButton.draw(g2);
+        shopButton.draw(g2);
+        money.draw(g2);
+
+        if (ShopButton.shopSignal) {
+            shop.draw(g2);
+            rateOfFireButton.draw(g2);
+            damageButton.draw(g2);
+            bulletSpeedButton.draw(g2);
+            firstDraw = true;
+        }
 
         g2.dispose();
     }

@@ -3,6 +3,7 @@ package main;
 import entity.Entity;
 import entity.gui.Money;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -17,22 +18,21 @@ public class CollisionChecker<T> {
     }
 
     public <T extends Entity> void checkEntityListHitEntityList(List<T> entityListA, List<T> entityListB, int reward, Money money) {
-        Iterator<T> iterator = entityListA.iterator();
+        List<T> toRemoveFromA = new ArrayList<>();
+        List<T> toRemoveFromB = new ArrayList<>();
 
-        while (iterator.hasNext()) {
-            T entityA = iterator.next();
-
-            Iterator<T> iterator2 = entityListB.iterator();
-            while (iterator2.hasNext()) {
-                T entityB = iterator2.next();
-
+        for (T entityA : entityListA) {
+            for (T entityB : entityListB) {
                 if (checkIntersection(entityA, entityB)) {
-                    iterator.remove();
-                    iterator2.remove();
+                    toRemoveFromA.add(entityA);
+                    toRemoveFromB.add(entityB);
                     money.addMoney(reward);
                     break;
                 }
             }
         }
+
+        entityListA.removeAll(toRemoveFromA);
+        entityListB.removeAll(toRemoveFromB);
     }
 }
