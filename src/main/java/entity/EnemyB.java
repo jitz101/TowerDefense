@@ -15,7 +15,7 @@ public class EnemyB extends Entity {
         this.angle = angleToCenter();
 
         getImage("/enemy/EnemyB.png");
-        hitbox = drawHitbox((int) xD, (int) yD, 12, 12, true);
+        hitbox = setHitbox((int) xD, (int) yD, 12, 12, true);
     }
 
     private void setSpawnPosition() {

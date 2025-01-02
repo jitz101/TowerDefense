@@ -1,6 +1,5 @@
 package entity;
 
-import main.CollisionChecker;
 import main.GamePanel;
 
 import java.awt.*;
@@ -12,7 +11,7 @@ public class Base extends Entity {
 
         setDefaultValues(gamePanel.centerTileX, gamePanel.centerTileY, 0);
 
-        hitbox = drawHitbox(x, y, gamePanel.tileSize, gamePanel.tileSize, false);
+        hitbox = setHitbox(x, y, gamePanel.tileSize, gamePanel.tileSize, false);
     }
 
     public void update() {

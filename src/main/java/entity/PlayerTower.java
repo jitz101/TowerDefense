@@ -1,19 +1,17 @@
 package entity;
 
 import entity.projectile.PlayerProjectile;
-import main.CollisionChecker;
 import main.GamePanel;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class PlayerTower extends Entity implements MouseMotionListener, MouseListener {
-    public List<PlayerProjectile> projectiles = new ArrayList<>();
+    public CopyOnWriteArrayList<PlayerProjectile> projectiles = new CopyOnWriteArrayList<>();
+    public int projectileSpeed = 5;
 
     public PlayerTower(GamePanel gamePanel) {
         super(gamePanel);
@@ -30,15 +28,13 @@ public class PlayerTower extends Entity implements MouseMotionListener, MouseLis
             projectile.update();
         }
 
-        Iterator<PlayerProjectile> iterator = projectiles.iterator();
-
-        while (iterator.hasNext()) {
-            PlayerProjectile projectile = iterator.next();
-
-            if (projectile.xD > gamePanel.screenWidth || projectile.xD < 0 || projectile.yD > gamePanel.screenHeight || projectile.yD < 0) {
-                iterator.remove();
-            }
-        }
+        projectiles.removeIf(
+        projectile ->
+            projectile.xD > gamePanel.screenWidth ||
+            projectile.xD < 0 ||
+            projectile.yD > gamePanel.screenHeight ||
+            projectile.yD < 0
+        );
     }
 
     public void draw(Graphics2D g2) {
@@ -60,18 +56,22 @@ public class PlayerTower extends Entity implements MouseMotionListener, MouseLis
         }
     }
 
-    @Override
-    public void mouseDragged(MouseEvent e) {
-
-    }
-
-    public void mouseMoved(MouseEvent e) {
+    private void turnTower(MouseEvent e) {
         int mouseX = e.getX();
         int mouseY = e.getY();
         int centerX = x + gamePanel.tileSize / 2;
         int centerY = y + gamePanel.tileSize / 2;
 
         angle = Math.atan2(mouseY - centerY, mouseX - centerX);
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        turnTower(e);
+    }
+
+    public void mouseMoved(MouseEvent e) {
+        turnTower(e);
     }
 
     @Override
@@ -82,7 +82,6 @@ public class PlayerTower extends Entity implements MouseMotionListener, MouseLis
     @Override
     public void mousePressed(MouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
-            // Berechne den Winkel zum Mauszeiger
             int mouseX = e.getX();
             int mouseY = e.getY();
             int centerX = x + gamePanel.tileSize / 2;
@@ -90,8 +89,7 @@ public class PlayerTower extends Entity implements MouseMotionListener, MouseLis
 
             double projectileAngle = Math.atan2(mouseY - centerY, mouseX - centerX);
 
-            // Erstelle ein neues Projektil mit der berechneten Richtung
-            projectiles.add(new PlayerProjectile(gamePanel, centerX, centerY, projectileAngle));
+            projectiles.add(new PlayerProjectile(gamePanel, centerX, centerY, projectileAngle, projectileSpeed));
         }
     }
 

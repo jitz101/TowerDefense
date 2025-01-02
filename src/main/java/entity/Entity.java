@@ -3,11 +3,10 @@ package entity;
 import main.GamePanel;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.Objects;
+import java.io.InputStream;
 
 public class Entity {
     public int x, y;
@@ -37,14 +36,19 @@ public class Entity {
     }
 
     public void getImage(String imagePath) {
-        try {
-            image = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream(imagePath)));
-        } catch (IOException e) {
-            e.printStackTrace();
+        InputStream resourceStream = getClass().getResourceAsStream(imagePath);
+        if (resourceStream == null) {
+            System.err.println("Resource not found: " + imagePath);
+        } else {
+            try {
+                image = ImageIO.read(resourceStream);
+            } catch (IOException e) {
+                System.err.println("Error reading the image: " + e.getMessage());
+            }
         }
     }
 
-    public Rectangle2D drawHitbox(int x, int y, int width, int height, boolean moving) {
+    public Rectangle2D setHitbox(int x, int y, int width, int height, boolean moving) {
         return moving ?
                 new Rectangle2D.Double(x - gamePanel.scale, y - gamePanel.scale, width * gamePanel.scale, height * gamePanel.scale)
                 :
