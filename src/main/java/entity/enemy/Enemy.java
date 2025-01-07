@@ -1,20 +1,28 @@
-package entity;
+package entity.enemy;
 
+import entity.Entity;
 import main.GamePanel;
 
 import java.awt.*;
 
-public class EnemyA extends Entity {
+public class Enemy extends Entity {
+    /*
+    - hitbox
+    - health
+    */
     private double angle;
 
-    public EnemyA(GamePanel gamePanel) {
+    protected String imagePath = "";
+    protected int speed = 2;
+
+    public Enemy(GamePanel gamePanel) {
         super(gamePanel);
-        setDefaultValues(0.0, 0.0, 2);
+        setDefaultValues(0.0, 0.0, speed);
         setSpawnPosition();
 
         this.angle = angleToCenter();
 
-        getImage("/enemy/EnemyA.png");
+        getImage(imagePath);
         hitbox = setHitbox((int) xD, (int) yD, 12, 12, true);
     }
 

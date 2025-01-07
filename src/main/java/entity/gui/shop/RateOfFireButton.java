@@ -1,5 +1,6 @@
 package entity.gui.shop;
 
+import entity.PlayerTower;
 import entity.gui.BasicButton;
 import entity.gui.Money;
 import main.Text;
@@ -9,11 +10,13 @@ import java.awt.*;
 
 public class RateOfFireButton extends BasicButton {
     Shop shop = new Shop(gamePanel);
+    PlayerTower playerTower;
     Money money;
 
-    public RateOfFireButton(GamePanel gamePanel, Money money) {
+    public RateOfFireButton(GamePanel gamePanel, Money money, PlayerTower playerTower) {
         super(gamePanel);
         this.money = money;
+        this.playerTower = playerTower;
 
         this.imagePath = "/gui/shop/rateOfFire.png";
         this.hoverImagePath = "/gui/shop/rateOfFireHover.png";
@@ -27,9 +30,11 @@ public class RateOfFireButton extends BasicButton {
     protected void mouseReleasedEvent() {
         int cost = 1;
 
-        if (money.moneyAmount >= cost) {
+        if (money.moneyAmount >= cost && playerTower.reloadTime > 100) {
             System.out.println("RateOfFire+");
             money.moneyAmount -= cost;
+            playerTower.reloadTime -= 100;
+            System.out.println("Reload time: " + playerTower.reloadTime);
         }
     }
 

@@ -1,6 +1,8 @@
 package main;
 
 import entity.*;
+import entity.enemy.EnemyA;
+import entity.enemy.EnemyB;
 import entity.gui.Money;
 import entity.gui.StartButton;
 import entity.gui.shop.*;
@@ -8,8 +10,6 @@ import wave.StartWave;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class GamePanel extends JPanel implements Runnable {
@@ -47,7 +47,7 @@ public class GamePanel extends JPanel implements Runnable {
     ShopButton shopButton = new ShopButton(this);
     Money money = new Money(this);
     Shop shop = new Shop(this);
-    RateOfFireButton rateOfFireButton = new RateOfFireButton(this, money);
+    RateOfFireButton rateOfFireButton = new RateOfFireButton(this, money, playerTower);
     DamageButton damageButton = new DamageButton(this, money);
     BulletSpeedButton bulletSpeedButton = new BulletSpeedButton(this, money, playerTower);
 
@@ -99,30 +99,26 @@ public class GamePanel extends JPanel implements Runnable {
         if (startButton.startSignal) {
             switch (startButton.wave) {
                 case 1:
-                    startWave.startEnemySpawner(enemyAList, () -> new EnemyA(this), 1000, 100, 1000, 0);
+                    startWave.startEnemySpawner(enemyAList, () -> new EnemyA(this), 10, 100, 1000, 0);
                     startButton.startSignal = false;
                     break;
                 case 2:
-                    startWave.startEnemySpawner(enemyBList, () -> new EnemyB(this), 10, 1000, 1000, 0);
+                    startWave.startEnemySpawner(enemyBList, () -> new EnemyB(this), 10, 100, 1000, 0);
                     startButton.startSignal = false;
                     break;
             }
         }
 
-        for (EnemyA enemy : enemyAList) {
-            enemy.update();
-        }
-        for (EnemyB enemy : enemyBList) {
-            enemy.update();
-        }
+        for (EnemyA enemy : enemyAList) {enemy.update();}
+        for (EnemyB enemy : enemyBList) {enemy.update();}
 
         enemiesCleared = enemyAList.isEmpty() && enemyBList.isEmpty();
 
         cc.checkEntityListHitEntity(enemyAList, base);
         cc.checkEntityListHitEntity(enemyBList, base);
 
-        cc.checkEntityListHitEntityList(enemyAList, playerTower.projectiles, 10, money);
-        cc.checkEntityListHitEntityList(enemyBList, playerTower.projectiles, 20, money);
+        cc.checkEntityListHitEntityList(enemyAList, playerTower.projectiles, EnemyA.reward, money);
+        cc.checkEntityListHitEntityList(enemyBList, playerTower.projectiles, EnemyB.reward, money);
 
     }
 

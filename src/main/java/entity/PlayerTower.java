@@ -11,7 +11,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class PlayerTower extends Entity implements MouseMotionListener, MouseListener {
     public CopyOnWriteArrayList<PlayerProjectile> projectiles = new CopyOnWriteArrayList<>();
+    volatile private boolean mouseDown = false;
     public int projectileSpeed = 5;
+    public int reloadTime = 1000;
 
     public PlayerTower(GamePanel gamePanel) {
         super(gamePanel);
@@ -65,11 +67,50 @@ public class PlayerTower extends Entity implements MouseMotionListener, MouseLis
         angle = Math.atan2(mouseY - centerY, mouseX - centerX);
     }
 
+    volatile private boolean isRunning = false;
+
+    private synchronized boolean checkAndMark() {
+        if (isRunning) {
+            return false;
+        }
+
+        isRunning = true;
+        return true;
+    }
+
+    private void shootingThread() {
+        if (checkAndMark()) {
+            new Thread(() -> {
+                do {
+                    try {
+                        Point mousePosition = gamePanel.getMousePosition();
+                        int mouseX = (int) mousePosition.getX();
+                        int mouseY = (int) mousePosition.getY();
+                        int centerX = x + gamePanel.tileSize / 2;
+                        int centerY = y + gamePanel.tileSize / 2;
+
+                        double projectileAngle = Math.atan2(mouseY - centerY, mouseX - centerX);
+
+                        projectiles.add(new PlayerProjectile(gamePanel, centerX, centerY, projectileAngle, projectileSpeed));
+                    } catch (NullPointerException ignored) {}
+
+                    try {
+                        Thread.sleep(reloadTime);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                } while (mouseDown);
+                isRunning = false;
+            }).start();
+        }
+    }
+
     @Override
     public void mouseDragged(MouseEvent e) {
         turnTower(e);
     }
 
+    @Override
     public void mouseMoved(MouseEvent e) {
         turnTower(e);
     }
@@ -82,21 +123,16 @@ public class PlayerTower extends Entity implements MouseMotionListener, MouseLis
     @Override
     public void mousePressed(MouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
-            int mouseX = e.getX();
-            int mouseY = e.getY();
-            int centerX = x + gamePanel.tileSize / 2;
-            int centerY = y + gamePanel.tileSize / 2;
-
-            double projectileAngle = Math.atan2(mouseY - centerY, mouseX - centerX);
-
-            projectiles.add(new PlayerProjectile(gamePanel, centerX, centerY, projectileAngle, projectileSpeed));
+            mouseDown = true;
+            shootingThread();
         }
     }
 
-
     @Override
     public void mouseReleased(MouseEvent e) {
-
+        if (e.getButton() == MouseEvent.BUTTON1) {
+            mouseDown = false;
+        }
     }
 
     @Override
