@@ -12,6 +12,7 @@ public class RateOfFireButton extends BasicButton {
     Shop shop = new Shop(gamePanel);
     PlayerTower playerTower;
     Money money;
+    int cost = 100;
 
     public RateOfFireButton(GamePanel gamePanel, Money money, PlayerTower playerTower) {
         super(gamePanel);
@@ -28,8 +29,6 @@ public class RateOfFireButton extends BasicButton {
 
     @Override
     protected void mouseReleasedEvent() {
-        int cost = 1;
-
         if (money.moneyAmount >= cost && playerTower.reloadTime > 100) {
             System.out.println("RateOfFire+");
             money.moneyAmount -= cost;
@@ -43,6 +42,6 @@ public class RateOfFireButton extends BasicButton {
     }
 
     public void draw(Graphics2D g2) {
-        shop.drawShopItem(g2, image, x, y, "Rate of", "Fire+", "100$", hitbox);
+        shop.drawShopItem(g2, image, x, y, "Rate of", "Fire+", cost + "$", hitbox);
     }
 }

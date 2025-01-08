@@ -11,6 +11,7 @@ public class BulletSpeedButton extends BasicButton {
     Shop shop = new Shop(gamePanel);
     PlayerTower playerTower;
     Money money;
+    int cost = 50;
 
     public BulletSpeedButton(GamePanel gamePanel, Money money, PlayerTower playerTower) {
         super(gamePanel);
@@ -27,8 +28,6 @@ public class BulletSpeedButton extends BasicButton {
 
     @Override
     protected void mouseReleasedEvent() {
-        int cost = 1;
-
         if (money.moneyAmount >= cost) {
             System.out.println("BulletSpeed+");
             money.moneyAmount -= cost;
@@ -41,6 +40,6 @@ public class BulletSpeedButton extends BasicButton {
     }
 
     public void draw(Graphics2D g2) {
-        shop.drawShopItem(g2, image, x, y, "Bullet", "Speed+", "50$", hitbox);
+        shop.drawShopItem(g2, image, x, y, "Bullet", "Speed+", cost + "$", hitbox);
     }
 }
