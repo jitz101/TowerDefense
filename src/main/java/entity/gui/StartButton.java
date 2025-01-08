@@ -7,7 +7,6 @@ import java.awt.*;
 public class StartButton extends BasicButton {
     private Boolean enemiesCleared;
     public Boolean startSignal = false;
-    public int wave = 0;
 
     public StartButton(GamePanel gamePanel) {
         super(gamePanel);
@@ -22,16 +21,16 @@ public class StartButton extends BasicButton {
 
     @Override
     protected void mouseReleasedEvent() {
-        wave++;
+        Wave.currentWave++;
         startSignal = true;
     }
 
     public void update() {
-        enemiesCleared = gamePanel.enemiesCleared;
+
     }
 
     public void draw(Graphics2D g2) {
-        if (enemiesCleared) {
+        if (GamePanel.enemyCount == 0) {
             g2.drawImage(image, x, y, ts * 2, ts, null);
             hitbox = setHitbox(x, y, ts * 2, ts, false);
         } else {

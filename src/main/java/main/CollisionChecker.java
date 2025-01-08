@@ -4,7 +4,6 @@ import entity.Entity;
 import entity.gui.Money;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class CollisionChecker<T> {
@@ -14,7 +13,13 @@ public class CollisionChecker<T> {
     }
 
     public <T extends Entity> void checkEntityListHitEntity(List<T> entityList, T entity) {
-        entityList.removeIf(entityFromList -> checkIntersection(entityFromList, entity));
+        entityList.removeIf(entityFromList -> {
+            boolean shouldRemove = checkIntersection(entityFromList, entity);
+            if (shouldRemove) {
+                GamePanel.enemyCount--;
+            }
+            return shouldRemove;
+        });
     }
 
     public <T extends Entity> void checkEntityListHitEntityList(List<T> entityListA, List<T> entityListB, int reward, Money money) {
@@ -27,6 +32,7 @@ public class CollisionChecker<T> {
                     toRemoveFromA.add(entityA);
                     toRemoveFromB.add(entityB);
                     money.addMoney(reward);
+                    GamePanel.enemyCount--;
                     break;
                 }
             }

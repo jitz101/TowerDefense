@@ -9,6 +9,7 @@ import java.awt.*;
 public class DamageButton extends BasicButton {
     Shop shop = new Shop(gamePanel);
     Money money;
+    int cost = 1000;
 
     public DamageButton(GamePanel gamePanel, Money money) {
         super(gamePanel);
@@ -24,11 +25,9 @@ public class DamageButton extends BasicButton {
 
     @Override
     protected void mouseReleasedEvent() {
-        int cost = 1;
-
         if (money.moneyAmount >= cost) {
             System.out.println("Damage+");
-            money.moneyAmount -= cost;
+            // money.moneyAmount -= cost;
         }
     }
 
@@ -37,6 +36,7 @@ public class DamageButton extends BasicButton {
     }
 
     public void draw(Graphics2D g2) {
-        shop.drawShopItem(g2, image, x, y, "Damage+", "1000$", "", hitbox);
+        // shop.drawShopItem(g2, image, x, y, "Damage+", "1000$", "", hitbox);
+        shop.drawShopItem(g2, image, x, y, "Damage+", "Not yet", "implemented", hitbox);
     }
 }

@@ -5,6 +5,7 @@ import entity.enemy.EnemyA;
 import entity.enemy.EnemyB;
 import entity.gui.Money;
 import entity.gui.StartButton;
+import entity.gui.Wave;
 import entity.gui.shop.*;
 import wave.StartWave;
 
@@ -28,9 +29,9 @@ public class GamePanel extends JPanel implements Runnable {
     public final int centerHeight = screenHeight / 2;
 
     int FPS = 60;
+    public static int enemyCount = 0;
 
     Boolean firstDraw = true;
-    public Boolean enemiesCleared = true;
 
     KeyHandler keyHandler = new KeyHandler();
     Thread gameThread;
@@ -38,14 +39,13 @@ public class GamePanel extends JPanel implements Runnable {
     PlayerTower playerTower = new PlayerTower(this);
     CopyOnWriteArrayList<EnemyA> enemyAList = new CopyOnWriteArrayList<>();
     CopyOnWriteArrayList<EnemyB> enemyBList = new CopyOnWriteArrayList<>();
-
     public StartWave startWave = new StartWave();
-
     CollisionChecker cc = new CollisionChecker();
 
     StartButton startButton = new StartButton(this);
     ShopButton shopButton = new ShopButton(this);
     Money money = new Money(this);
+    Wave wave = new Wave(this);
     Shop shop = new Shop(this);
     RateOfFireButton rateOfFireButton = new RateOfFireButton(this, money, playerTower);
     DamageButton damageButton = new DamageButton(this, money);
@@ -95,15 +95,89 @@ public class GamePanel extends JPanel implements Runnable {
         base.update();
         playerTower.update();
 
+        int enemyACount;
+        int enemyBCount;
         startButton.update();
         if (startButton.startSignal) {
-            switch (startButton.wave) {
+            switch (Wave.currentWave) {
                 case 1:
-                    startWave.startEnemySpawner(enemyAList, () -> new EnemyA(this), 10, 100, 1000, 0);
+                    enemyACount = 10;
+                    enemyCount += enemyACount;
+
+                    startWave.startEnemySpawner(enemyAList, () -> new EnemyA(this), enemyACount, 1000, 1000, 0);
                     startButton.startSignal = false;
                     break;
                 case 2:
-                    startWave.startEnemySpawner(enemyBList, () -> new EnemyB(this), 10, 100, 1000, 0);
+                    enemyACount = 15;
+                    enemyBCount = 1;
+                    enemyCount += enemyACount + enemyBCount;
+
+                    startWave.startEnemySpawner(enemyAList, () -> new EnemyA(this), enemyACount, 500, 1200, 0);
+                    startWave.startEnemySpawner(enemyBList, () -> new EnemyB(this), enemyBCount, 1, 1, 10000);
+                    startButton.startSignal = false;
+                    break;
+                case 3:
+                    enemyBCount = 10;
+                    enemyCount += enemyBCount;
+
+                    startWave.startEnemySpawner(enemyBList, () -> new EnemyB(this), enemyBCount, 1000, 2000, 1000);
+                    startButton.startSignal = false;
+                    break;
+                case 4:
+                    enemyACount = 10;
+                    enemyBCount = 5;
+                    enemyCount += enemyACount + enemyBCount;
+
+                    startWave.startEnemySpawner(enemyAList, () -> new EnemyA(this), enemyACount, 500, 1200, 0);
+                    startWave.startEnemySpawner(enemyBList, () -> new EnemyB(this), enemyBCount, 1000, 5000, 3000);
+                    startButton.startSignal = false;
+                    break;
+                case 5:
+                    enemyACount = 30;
+                    enemyCount += enemyACount;
+
+                    startWave.startEnemySpawner(enemyAList, () -> new EnemyA(this), enemyACount, 200, 800, 1000);
+                    startButton.startSignal = false;
+                    break;
+                case 6:
+                    enemyACount = 20;
+                    enemyBCount = 10;
+                    enemyCount += enemyACount + enemyBCount;
+
+                    startWave.startEnemySpawner(enemyAList, () -> new EnemyA(this), enemyACount, 500, 1200, 0);
+                    startWave.startEnemySpawner(enemyBList, () -> new EnemyB(this), enemyBCount, 1000, 3000, 5000);
+                    startButton.startSignal = false;
+                    break;
+                case 7:
+                    enemyACount = 10;
+                    enemyBCount = 20;
+                    enemyCount += enemyACount + enemyBCount;
+
+                    startWave.startEnemySpawner(enemyAList, () -> new EnemyA(this), enemyACount, 500, 1200, 5000);
+                    startWave.startEnemySpawner(enemyBList, () -> new EnemyB(this), enemyBCount, 1000, 1000, 0);
+                    startButton.startSignal = false;
+                    break;
+                case 8:
+                    enemyACount = 10;
+                    enemyCount += enemyACount;
+
+                    startWave.startEnemySpawner(enemyAList, () -> new EnemyA(this), enemyACount, 1, 1, 0);
+                    startButton.startSignal = false;
+                    break;
+                case 9:
+                    enemyBCount = 5;
+                    enemyCount += enemyBCount;
+
+                    startWave.startEnemySpawner(enemyBList, () -> new EnemyB(this), enemyBCount, 1, 1, 0);
+                    startButton.startSignal = false;
+                    break;
+                case 10:
+                    enemyACount = 10;
+                    enemyBCount = 5;
+                    enemyCount += enemyACount + enemyBCount;
+
+                    startWave.startEnemySpawner(enemyAList, () -> new EnemyA(this), enemyACount, 1, 1, 0);
+                    startWave.startEnemySpawner(enemyBList, () -> new EnemyB(this), enemyBCount, 1, 1, 0);
                     startButton.startSignal = false;
                     break;
             }
@@ -112,14 +186,11 @@ public class GamePanel extends JPanel implements Runnable {
         for (EnemyA enemy : enemyAList) {enemy.update();}
         for (EnemyB enemy : enemyBList) {enemy.update();}
 
-        enemiesCleared = enemyAList.isEmpty() && enemyBList.isEmpty();
-
         cc.checkEntityListHitEntity(enemyAList, base);
         cc.checkEntityListHitEntity(enemyBList, base);
 
         cc.checkEntityListHitEntityList(enemyAList, playerTower.projectiles, EnemyA.reward, money);
         cc.checkEntityListHitEntityList(enemyBList, playerTower.projectiles, EnemyB.reward, money);
-
     }
 
     public void paintComponent(Graphics g) {
@@ -147,6 +218,7 @@ public class GamePanel extends JPanel implements Runnable {
         startButton.draw(g2);
         shopButton.draw(g2);
         money.draw(g2);
+        wave.draw(g2);
 
         if (ShopButton.shopSignal) {
             shop.draw(g2);
