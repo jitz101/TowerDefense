@@ -21,8 +21,5 @@ public class Base extends Entity {
         g2.setColor(Color.white);
 
         g2.fillRect(x, y, gamePanel.tileSize, gamePanel.tileSize);
-
-        g2.setColor(Color.RED);
-        g2.draw(hitbox);
     }
 }

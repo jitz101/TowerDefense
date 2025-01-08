@@ -29,8 +29,5 @@ public class PlayerProjectile extends Entity {
         double centerY = yD - gamePanel.tileSize / 2;
 
         g2.drawImage(image, (int)centerX, (int)centerY, gamePanel.tileSize, gamePanel.tileSize, null);
-
-        g2.setColor(Color.RED);
-        g2.draw(hitbox);
     }
 }

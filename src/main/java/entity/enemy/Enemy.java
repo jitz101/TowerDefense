@@ -76,8 +76,5 @@ public class Enemy extends Entity {
         g2.drawImage(image, 0, 0, gamePanel.tileSize, gamePanel.tileSize, null);
 
         g2.setTransform(originalTransform);
-
-        g2.setColor(Color.RED);
-        g2.draw(hitbox);
     }
 }
